@@ -1,0 +1,186 @@
+micronaut:
+  application:
+    name: microsample
+    local-storage-dir: "/var/www/microsample"
+    public-path-prefix: "pub"
+    private-path-prefix: "drk"
+    sociair-api-key: ${SOCIAIR_KEY}
+    app-id: ${APP_ID}
+    session-expiration: ${SESSION_EXPIRATION:7} # days
+    app-url: http://localhost:${MICROSAMPLE_PORT}
+    resource-api-path: "res"
+    image-max-size: 5242880 # 5MB
+    cookie-secure: false
+  security:
+    enabled: false
+    reject-not-found: false
+    redirect:
+      enabled: false
+    token:
+      jwt:
+        enabled: true
+        signatures:
+          jwks:
+            local-signer:
+              url: http://localhost:41518/.well-known/jwks.json
+              cache-expiration: 3600
+        claims-validators:
+          audience: ${APP_ID}
+          issuer: com.doruk.jwks
+    authentication: bearer
+  executors:
+    cpu-executor:
+      type: fixed
+      n-threads: 4
+
+  server:
+    proxy:
+      enabled: true
+    multipart:
+      max-file-size: 10
+      max-request-size: 52MB
+    cors:
+      enabled: true
+      configurations:
+        web:
+          allowedOrigins: "http://localhost:3000"
+    dispatch-options-requests: true
+    netty:
+      use-native-transport: true
+      user-forwarded-headers: true
+
+      listeners:
+        http2Listener:
+          port: ${MICROSAMPLE_PORT}
+      event-loops:
+        default:
+          prefer-native-transport: true
+          transport: io_uring
+          loom-carrier: true  # for loom carrier
+
+      default-bootstrap:
+      event-loop-shutdown-quiet-period: 0ms
+      event-loop-shutdown-timeout: 0ms
+
+    thread-selection: blocking # for loom carrier
+    context-path: /app
+  http:
+    client:
+      event-loop-group: default # for loom carrier
+      pool:
+        connection-locality: enforced_always # for loom carrier
+    services:
+      jwks:
+        url: http://localhost:41518
+      brevo:
+        url: ${brevo.url}
+      sociair:
+        url: https://sms.sociair.com
+
+  router:
+    static-resources:
+      swagger:
+        paths: classpath:META-INF/swagger
+        mapping: /swagger/**
+      swagger-ui:
+        paths: classpath:META-INF/swagger/views/swagger-ui
+        mapping: /api-docs/**
+      swagger-ui-default:
+        paths: classpath:META-INF/swagger/views/swagger-ui
+        mapping: /swagger-ui/**
+  control-panel:
+    enabled: true
+    title: micro-panel
+    path: /control-panel
+    log-url: true
+
+
+
+# ==========================
+# Database Configuration
+# ==========================
+datasources:
+  default:
+    url: jdbc:${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+    driverClassName: org.postgresql.Driver
+    dialect: POSTGRES
+    schema: sample
+
+    hikari:
+      maximum-pool-size: 30
+      minimum-idle: 5
+      auto-commit: true
+
+jimmer:
+  show-sql: true
+  dialect: postgres
+
+nats:
+  default:
+    addresses:
+      - "nats://localhost:4222"
+    username: microsample123
+    password: ${NATS_PASSWORD}
+
+redis:
+  uri: "redis://localhost"
+
+brevo:
+  url: https://api.brevo.com
+  apiKey: ${BREVO_API_KEY}
+  senderEmail: ${BREVO_SENDER_EMAIL}
+  senderName: ${BREVO_SENDER_NAME}
+
+# ==========================
+# Flyway Migration Settings
+# ==========================
+
+flyway:
+  datasources:
+    default:
+      enabled: true
+      validate-on-migrate: true
+      baseline-on-migrate: true
+      baseline-description: "Initial migration"
+      out-of-order: false
+      locations: classpath:db/migration
+      schemas: sample
+
+# ==================================
+# S3 Storage Configuration
+# ==================================
+storage:
+  s3:
+    bucket: test-bucket
+    public-base-url: https://cdn.example.com
+    region: auto
+    endpoint: https://<account-id>.r2.cloudflarestorage.com
+    access-key: ${R2_ACCESS_KEY}
+    secret-key: ${R2_SECRET_KEY}
+
+# ==========================
+# Logging
+# ==========================
+logger:
+  levels:
+    ROOT: TRACE
+    io.micronaut: INFO
+    io.netty: ALL
+    io.micronaut.http.server.netty: ALL
+    io.micronaut.context: WARN
+
+    org.flywaydb: INFO
+    io.micronaut.flyway: INFO
+
+    org.babyfish.jimmer.sql: TRACE
+
+endpoints:
+  all:
+    enabled: true
+    sensitive: false
+  health:
+    details-visible: ANONYMOUS
+  loggers:
+    write-sensitive: false

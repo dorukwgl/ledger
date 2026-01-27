@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: com.doruk
+testFramework: junit
+sourceLanguage: java
+buildTool: gradle_kotlin
+features: [app-name, control-panel, flyway, graalvm, gradle, http-client, java, java-application, jdbc-hikari, junit, logback, lombok, management, micronaut-aot, micronaut-build, micronaut-http-validation, nats, netty-server, openapi, postgres, readme, redis-lettuce, security-annotations, security-jwt, serialization-jackson, shade, static-resources, swagger-ui, test-resources, validation, yaml, yaml-build]

@@ -1,0 +1,31 @@
+[Unit]
+Description=Microsample Micronaut Native Service
+# Wait for networking and DB to be ready before starting
+After=network.target postgresql.service redis-server.service
+
+[Service]
+# Run as the restricted user
+User=microsample
+Group=microsample
+
+# Directory where the app lives
+WorkingDirectory=/opt/microsample
+
+# 1. Load the Environment Variables automatically
+EnvironmentFile=/opt/microsample/.env
+
+# 2. Command to run the binary
+ExecStart=/opt/microsample/microsample
+
+# Restart automatically if it crashes
+Restart=always
+RestartSec=5
+
+# Logging: Redirect Standard Output to System Logger
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=microsample
+
+[Install]
+# Start this service when the system boots up
+WantedBy=multi-user.target
