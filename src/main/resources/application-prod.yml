@@ -10,6 +10,7 @@ micronaut:
     image-max-size: 5242880 # 5MB
     cookie-secure: true
     app-url: http://localhost:${LEDGER_PORT}
+    resource-api-path: "res"
   security:
     enabled: true
     reject-not-found: false

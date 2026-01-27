@@ -13,5 +13,6 @@ public record AppConfig(String name,
                         String appUrl,
                         boolean cookieSecure,
                         long imageMaxSize,
-                        String resourceApiPath) {
+                        String resourceApiPath
+) {
 }

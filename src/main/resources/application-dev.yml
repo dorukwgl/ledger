@@ -8,9 +8,19 @@ micronaut:
     app-id: ${APP_ID}
     session-expiration: ${SESSION_EXPIRATION:7} # days
     app-url: http://localhost:${LEDGER_PORT}
+    resource-api-path: "res"
     image-max-size: 5242880 # 5MB
     cookie-secure: false
   security:
+    intercept-url-map:
+      -
+        pattern: /control-panel
+        access:
+          - isAnonymous()
+      -
+        pattern: /control-panel/*
+        access:
+          - isAnonymous()
     enabled: true
     reject-not-found: false
     redirect:

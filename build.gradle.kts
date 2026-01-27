@@ -164,6 +164,15 @@ micronaut {
     }
 }
 
+tasks.named<JavaExec>("run") {
+    jvmArgs(
+        // Allow Netty to optimize NIO Selectors
+        "--add-opens", "java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens", "java.base/java.nio=ALL-UNNAMED",
+        "--enable-native-access=ALL-UNNAMED"
+    )
+}
+
 
 tasks.named<io.micronaut.gradle.docker.NativeImageDockerfile>("dockerfileNative") {
     jdkVersion = "25"

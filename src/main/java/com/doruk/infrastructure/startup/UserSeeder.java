@@ -4,10 +4,12 @@ import com.doruk.application.security.PasswordEncoder;
 import com.doruk.domain.shared.enums.MultiAuthType;
 import com.doruk.infrastructure.persistence.entity.RoleDraft;
 import com.doruk.infrastructure.persistence.entity.UserDraft;
+import com.doruk.infrastructure.util.Constants;
 import io.micronaut.context.annotation.Requires;
 import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.babyfish.jimmer.sql.JSqlClient;
+import org.babyfish.jimmer.sql.runtime.LogicalDeletedBehavior;
 
 import java.util.List;
 
@@ -24,7 +26,7 @@ public class UserSeeder {
                 .setEmailVerified(true)
                 .setPhoneVerified(true)
                 .setPhone("9829293466")
-                .setRoles(List.of(RoleDraft.$.produce(r -> r.setName("DICTATOR"))))
+                .setRoles(List.of(RoleDraft.$.produce(r -> r.setName(Constants.DICTATOR_ROLE))))
                 .setMultiFactorAuth(MultiAuthType.EMAIL)
                 .setPassword(hasher.encode("dorukwgl@ihbibicdff"))
         );
@@ -34,7 +36,7 @@ public class UserSeeder {
                 .setEmailVerified(true)
                 .setPhoneVerified(true)
                 .setPhone("9829293466")
-                .setRoles(List.of(RoleDraft.$.produce(r -> r.setName("SYS_ADMIN_ROLE"))))
+                .setRoles(List.of(RoleDraft.$.produce(r -> r.setName(Constants.SYS_ADMIN_ROLE))))
                 .setMultiFactorAuth(MultiAuthType.NONE)
                 .setPassword(hasher.encode("chd@ihbibicdff"))
         );
@@ -49,7 +51,9 @@ public class UserSeeder {
                 .setPassword(hasher.encode("password"))
         );
 
-        client.saveEntitiesCommand(List.of(dictator, sysAdmin, user))
+        client
+                .filters(c -> c.setBehavior(LogicalDeletedBehavior.IGNORED))
+                .saveEntitiesCommand(List.of(dictator, sysAdmin, user))
                 .execute();
 
         System.out.println("Users seeded...");
