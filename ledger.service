@@ -1,21 +1,21 @@
 [Unit]
-Description=Microsample Micronaut Native Service
+Description=Ledger Micronaut Native Service
 # Wait for networking and DB to be ready before starting
 After=network.target postgresql.service redis-server.service
 
 [Service]
 # Run as the restricted user
-User=microsample
-Group=microsample
+User=ledger
+Group=ledger
 
 # Directory where the app lives
-WorkingDirectory=/opt/microsample
+WorkingDirectory=/opt/ledger
 
 # 1. Load the Environment Variables automatically
-EnvironmentFile=/opt/microsample/.env
+EnvironmentFile=/opt/ledger/.env
 
 # 2. Command to run the binary
-ExecStart=/opt/microsample/microsample
+ExecStart=/opt/ledger/ledger
 
 # Restart automatically if it crashes
 Restart=always
@@ -24,7 +24,7 @@ RestartSec=5
 # Logging: Redirect Standard Output to System Logger
 StandardOutput=journal
 StandardError=journal
-SyslogIdentifier=microsample
+SyslogIdentifier=ledger
 
 [Install]
 # Start this service when the system boots up

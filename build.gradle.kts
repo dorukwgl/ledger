@@ -119,7 +119,7 @@ tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.compilerArgs.addAll(listOf(
         "-Amicronaut.processing.group=com.doruk",
-        "-Amicronaut.processing.module=microsample"
+        "-Amicronaut.processing.module=ledger"
     ))
 
     if (generateDocs) {
@@ -129,10 +129,10 @@ tasks.withType<JavaCompile> {
 
 // --- Flyway Configuration
 flyway {
-    url = "jdbc:postgresql://localhost:5432/microsample"
+    url = "jdbc:postgresql://localhost:5432/ledger"
     user = "doruk"
     password = "dorukdb"
-    schemas = arrayOf("sample")
+    schemas = arrayOf("main")
     locations = arrayOf("filesystem:src/main/resources/db/migration")
 }
 

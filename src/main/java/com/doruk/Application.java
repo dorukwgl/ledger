@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.info.Info;
 
 @OpenAPIDefinition(
         info = @Info(
-                title = "microsample",
+                title = "Ledger",
                 version = "1.0.0"
         )
 )

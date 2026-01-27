@@ -1,15 +1,15 @@
 micronaut:
   application:
-    name: microsample
-    localStorageDir: "/var/www/microsample"
+    name: Ledger
+    localStorageDir: "/var/www/ledger"
     publicPathPrefix: "pub"
     privatePathPrefix: "drk"
-    resource-api-path: "res"
     sociairApiKey: ${SOCIAIR_KEY}
     app-id: ${APP_ID}
     session-expiration: ${SESSION_EXPIRATION:7} # days
     image-max-size: 5242880 # 5MB
     cookie-secure: true
+    app-url: http://localhost:${LEDGER_PORT}
   security:
     enabled: true
     reject-not-found: false
@@ -47,15 +47,12 @@ micronaut:
 
       listeners:
         http2Listener:
-          port: ${MICROSAMPLE_PORT}
+          port: ${LEDGER_PORT}
       event-loops:
         default:
           prefer-native-transport: true
           transport: io_uring
           loom-carrier: true  # for loom carrier
-#      parent:
-#        prefer-native-transport: true
-#        transport: io_uring
 
       default-bootstrap:
       event-loop-shutdown-quiet-period: 0ms
@@ -99,7 +96,7 @@ datasources:
     password: ${DATASOURCE_PASSWORD}
     driverClassName: org.postgresql.Driver
     dialect: POSTGRES
-    schema: sample
+    schema: main
 
     hikari:
       maximum-pool-size: 30
@@ -114,7 +111,7 @@ nats:
   default:
     addresses:
       - "nats://localhost:4222"
-    username: microsample123
+    username: ledger-system-sysid-1
     password: ${NATS_PASSWORD}
 
 redis:
@@ -139,7 +136,7 @@ flyway:
       baseline-description: "Initial migration"
       out-of-order: false
       locations: classpath:db/migration
-      schemas: sample
+      schemas: main
 
 # ==================================
 # S3 Storage Configuration
