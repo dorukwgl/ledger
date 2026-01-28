@@ -6,7 +6,7 @@ import io.micronaut.http.annotation.Get;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "Accessing Private Files")
-@Controller("/resp")
+@Controller("/res")
 public class PrivateFilesController {
 
     @Get("/{filename:.*}")
