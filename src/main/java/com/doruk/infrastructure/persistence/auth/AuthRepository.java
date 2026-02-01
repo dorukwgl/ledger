@@ -5,33 +5,32 @@ import com.doruk.application.app.auth.dto.BiometricDto;
 import com.doruk.application.app.auth.dto.SessionDto;
 import com.doruk.domain.shared.enums.MultiAuthType;
 import com.doruk.domain.shared.enums.Permissions;
-import com.doruk.infrastructure.persistence.auth.mapper.AuthMapper;
 import com.doruk.infrastructure.persistence.auth.mapper.BiometricMapper;
 import com.doruk.infrastructure.persistence.auth.mapper.SessionMapper;
 import com.doruk.infrastructure.persistence.entity.*;
 import com.doruk.infrastructure.util.Constants;
+import com.doruk.jooq.tables.RolePermissions;
+import com.doruk.jooq.tables.UserRoles;
+import com.doruk.jooq.tables.Users;
 import jakarta.inject.Singleton;
 import javafx.util.Pair;
 import lombok.RequiredArgsConstructor;
 import org.babyfish.jimmer.sql.JSqlClient;
-import org.babyfish.jimmer.sql.JoinType;
 import org.babyfish.jimmer.sql.ast.Predicate;
 import org.babyfish.jimmer.sql.ast.mutation.SaveMode;
-import org.babyfish.jimmer.sql.runtime.LogicalDeletedBehavior;
+import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Singleton
 @RequiredArgsConstructor
 public class AuthRepository {
     private final JSqlClient sqlClient;
     private final SessionMapper sessionMapper;
-    private final AuthMapper authMapper;
     private final BiometricMapper biometricMapper;
+    private final DSLContext dsl;
 
     private String getDeviceId(String sessionId) {
         return sqlClient.createQuery(SessionTable.$)
@@ -41,52 +40,42 @@ public class AuthRepository {
                 .getFirst();
     }
 
-    public Optional<AuthDto> findByUsernameOrEmail(String field) {
-        var t = UserTableEx.$;
-        var dt = sqlClient.filters(cfg -> cfg.setBehavior(LogicalDeletedBehavior.IGNORED))
-                .createQuery(UserTable.$)
-                .where(Predicate.or(UserTable.$.username().eq(field), UserTable.$.email().eq(field)))
-                .select(
-                        t.id(),
-                        t.username(),
-                        t.password(),
-                        t.phone(),
-                        t.email(),
-                        t.emailVerified(),
-                        t.phoneVerified(),
-                        t.multiFactorAuth(),
-                        t.roles(JoinType.LEFT).permissions(JoinType.LEFT)
+    private Optional<AuthDto> findUserWithPermissions(org.jooq.Condition whereCondition) {
+        var u = Users.USERS;
+        var r = UserRoles.USER_ROLES;
+        var p = RolePermissions.ROLE_PERMISSIONS;
+        var rec = dsl.select(
+                        u.ID,
+                        u.USERNAME,
+                        u.PASSWORD,
+                        u.PHONE,
+                        u.EMAIL,
+                        u.IS_EMAIL_VERIFIED,
+                        u.IS_PHONE_VERIFIED,
+                        u.MULTI_FACTOR_AUTH,
+                        // fetch list of permissions
+                        DSL.multiset(
+                                dsl.selectDistinct(p.PERMISSION_NAME)
+                                        .from(r)
+                                        .join(p).on(p.ROLE_NAME.eq(r.NAME))
+                                        .where(r.USER_ID.eq(u.ID))
+                        ).convertFrom(rs -> new HashSet<>(rs.map(perm -> Permissions.valueOf(perm.value1()))))
                 )
-                .execute();
+                .from(u)
+                .where(whereCondition)
+                .fetchOneInto(AuthDto.class);
 
-        if (dt.isEmpty())
-            return Optional.empty();
+        return Optional.ofNullable(rec);
+    }
 
-        return Optional.of(authMapper.toAuthDto(dt));
+    public Optional<AuthDto> findByUsernameOrEmail(String field) {
+        var u = Users.USERS;
+        return this.findUserWithPermissions(u.USERNAME.eq(field).or(u.EMAIL.eq(field)));
     }
 
     public Optional<AuthDto> findByUserId(String userId) {
-        var t = UserTableEx.$;
-        var dt = sqlClient.filters(cfg -> cfg.setBehavior(LogicalDeletedBehavior.IGNORED))
-                .createQuery(UserTable.$)
-                .where(t.id().eq(UUID.fromString(userId)))
-                .select(
-                        t.id(),
-                        t.username(),
-                        t.password(),
-                        t.phone(),
-                        t.email(),
-                        t.emailVerified(),
-                        t.phoneVerified(),
-                        t.multiFactorAuth(),
-                        t.roles(JoinType.LEFT).permissions(JoinType.LEFT)
-                )
-                .execute();
-
-        if (dt.isEmpty())
-            return Optional.empty();
-
-        return Optional.of(authMapper.toAuthDto(dt));
+        var u = Users.USERS;
+        return this.findUserWithPermissions(u.USERNAME.eq(userId));
     }
 
     public void createSession(String userId,

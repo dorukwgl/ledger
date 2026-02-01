@@ -1,3 +1,4 @@
+import org.jooq.meta.jaxb.ForcedType
 
 val awssdkVersion = "2.31.66"
 val postgresVersion = "42.7.9"
@@ -171,6 +172,13 @@ jooq {
                     database.apply {
                         name = "org.jooq.meta.postgres.PostgresDatabase"
                         inputSchema = "main"
+
+                        forcedTypes = listOf(
+                            ForcedType()
+                                .withUserType(" com.doruk.domain.shared.enums.MultiAuthType")
+                                .withEnumConverter(true)
+                                .withIncludeTypes("multi_auth_type"),
+                        )
                     }
 
                     generate.apply {
