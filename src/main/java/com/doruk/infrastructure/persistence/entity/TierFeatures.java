@@ -8,7 +8,7 @@ import org.babyfish.jimmer.sql.*;
 public interface TierFeatures {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long tid();
+    long tid();
 
     String value();
 

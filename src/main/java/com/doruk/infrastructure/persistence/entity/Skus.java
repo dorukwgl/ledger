@@ -8,7 +8,7 @@ import java.util.UUID;
 
 import com.doruk.domain.catalog.types.SkuCategory;
 import com.doruk.domain.catalog.types.SkuScope;
-import com.doruk.domain.catalog.types.CatelogStatus;
+import com.doruk.domain.catalog.types.CatalogStatus;
 import com.doruk.infrastructure.util.V7Generator;
 import org.babyfish.jimmer.sql.*;
 import org.jetbrains.annotations.Nullable;
@@ -35,7 +35,7 @@ public interface Skus {
     @Nullable
     Integer termHintMonths();
 
-    CatelogStatus status();
+    CatalogStatus status();
 
     @Nullable
     LocalDateTime publishedAt();

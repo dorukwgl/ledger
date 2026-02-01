@@ -7,14 +7,14 @@ import java.util.List;
 import com.doruk.domain.catalog.types.DeliveryModel;
 import com.doruk.domain.catalog.types.InfraModelType;
 import com.doruk.domain.catalog.types.OperationalOwner;
-import com.doruk.domain.catalog.types.CatelogStatus;
+import com.doruk.domain.catalog.types.CatalogStatus;
 import org.babyfish.jimmer.sql.*;
 
 @Entity
 public interface Offerings {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id();
+    long id();
 
     String code();
 
@@ -26,7 +26,7 @@ public interface Offerings {
 
     OperationalOwner operationalOwner();
 
-    CatelogStatus status();
+    CatalogStatus status();
 
     LocalDateTime createdAt();
 

@@ -1,6 +1,7 @@
 package com.doruk.application.app.auth.service;
 
 import com.doruk.application.app.auth.dto.*;
+import com.doruk.application.app.auth.dto.OtpTransaction;
 import com.doruk.application.enums.OtpChannel;
 import com.doruk.application.enums.TemplateType;
 import com.doruk.application.events.OtpDeliveryEvent;

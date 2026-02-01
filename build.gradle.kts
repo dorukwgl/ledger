@@ -1,7 +1,10 @@
+
 val awssdkVersion = "2.31.66"
 val postgresVersion = "42.7.9"
 val flywayPostgresVersion = "11.20.3"
 val jimmerVersion = "0.9.120"
+val jooqVersion = "3.20.11"
+val lombokVersion = "1.18.42"
 
 buildscript {
     repositories {
@@ -20,6 +23,7 @@ plugins {
     id("io.micronaut.test-resources") version "4.6.1"
     id("io.micronaut.aot") version "4.6.1"
     id("org.flywaydb.flyway") version "11.20.3"
+    id("nu.studer.jooq") version "10.2"
 }
 
 version = "1.0.0"
@@ -30,7 +34,11 @@ repositories {
 }
 
 dependencies {
-    annotationProcessor("org.projectlombok:lombok")
+    // lombok
+    compileOnly("org.projectlombok:lombok:${lombokVersion}")
+    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
+
+    annotationProcessor("io.micronaut:micronaut-inject-java")
     annotationProcessor("io.micronaut:micronaut-http-validation")
     annotationProcessor("io.micronaut.openapi:micronaut-openapi")
     annotationProcessor("io.micronaut.security:micronaut-security-annotations")
@@ -62,6 +70,13 @@ dependencies {
 
     // Jimmer
     implementation("org.babyfish.jimmer:jimmer-sql:$jimmerVersion")
+    // JOOQ
+    implementation("io.micronaut.sql:micronaut-jooq")
+    implementation("org.jooq:jooq:$jooqVersion")
+    jooqGenerator("org.jooq:jooq-codegen:$jooqVersion")
+    jooqGenerator("org.postgresql:postgresql:$postgresVersion")
+    // for native image, flat mapping
+    implementation("org.simpleflatmapper:sfm-jdbc:9.0.2")
 
     // Utilities
     implementation("nl.basjes.parse.useragent:yauaa:7.32.0")
@@ -81,7 +96,6 @@ dependencies {
 
     // --- Compile Only / Provided ---
     compileOnly("io.micronaut.openapi:micronaut-openapi-annotations")
-    compileOnly("org.projectlombok:lombok")
 
     compileOnly("io.micronaut.validation:micronaut-validation-processor")
 
@@ -136,6 +150,46 @@ flyway {
     locations = arrayOf("filesystem:src/main/resources/db/migration")
 }
 
+jooq {
+    version.set(jooqVersion)
+
+    configurations {
+        create("main") {
+            generateSchemaSourceOnCompilation.set(true)
+
+            jooqConfiguration.apply {
+                jdbc.apply {
+                    driver = "org.postgresql.Driver"
+                    url = "jdbc:postgresql://localhost:5432/ledger"
+                    user = "doruk"
+                    password = "dorukdb"
+                }
+
+                generator.apply {
+                    name = "org.jooq.codegen.JavaGenerator"
+
+                    database.apply {
+                        name = "org.jooq.meta.postgres.PostgresDatabase"
+                        inputSchema = "main"
+                    }
+
+                    generate.apply {
+                        isImmutablePojos = true
+                        isFluentSetters = true
+                        isJavaTimeTypes = true
+                        isJpaAnnotations = true
+                    }
+
+                    target.apply {
+                        packageName = "com.doruk.jooq"
+                        directory = "build/generated-src/jooq"
+                    }
+                }
+            }
+        }
+    }
+}
+
 graalvmNative.toolchainDetection = false
 
 micronaut {
@@ -162,6 +216,10 @@ micronaut {
         replaceLogbackXml = true
         configurationProperties.put("micronaut.security.jwks.enabled","false")
     }
+}
+
+tasks.named("compileJava") {
+    dependsOn("generateJooq")
 }
 
 tasks.named<JavaExec>("run") {

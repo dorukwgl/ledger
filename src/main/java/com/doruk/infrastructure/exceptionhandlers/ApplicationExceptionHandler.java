@@ -42,6 +42,7 @@ public class ApplicationExceptionHandler implements ExceptionHandler<Application
             case IncompleteStateException _ -> new Pair<>(422, "Partial Content");
             case InvalidInputException _ -> new Pair<>(400, "Bad Request");
             case RateLimitException _ -> new Pair<>(429, "Cooling Down");
+            case NotFoundException _ -> new Pair<>(404, "Oops! Not Found");
             default -> throw exception; // let the global exception handler handle the server error
         };
     }

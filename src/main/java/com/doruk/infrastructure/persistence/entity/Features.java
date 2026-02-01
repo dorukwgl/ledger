@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 public interface Features {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id();
+    long id();
 
     String code();
 

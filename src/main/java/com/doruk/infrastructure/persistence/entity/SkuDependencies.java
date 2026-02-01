@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public interface SkuDependencies {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id();
+    long id();
 
     DependencyType dependencyType();
 
@@ -19,10 +19,10 @@ public interface SkuDependencies {
     LocalDateTime createdAt();
 
     @ManyToOne
-    @Column(name = "target_sku_id")
+    @JoinColumn(name = "target_sku_id")
     Skus targetSku();
 
     @ManyToOne
-    @Column(name = "sku_id")
+    @JoinColumn(name = "sku_id")
     Skus sku();
 }

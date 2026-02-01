@@ -1,10 +1,10 @@
 package com.doruk.domain.catalog.types;
 
-public enum CatelogStatus {
+public enum CatalogStatus {
     ACTIVE("active"),
     INACTIVE("inactive"),
     DEPRECATED("deprecated");
 
     private String name;
-    CatelogStatus(String name) {}
+    CatalogStatus(String name) {}
 }

@@ -7,7 +7,8 @@ public enum Permissions {
     MANAGE_SYSTEM_USER_ROLES(1),
     CREATE_ROLES (3),
     ALTER_USER_ACCOUNT_STATUS(4),
-    UPDATE_OWN_PROFILE (5);
+    UPDATE_OWN_PROFILE (5),
+    DELETE_CATALOG_PRODUCTS(6);
 
     private final int value;
 
