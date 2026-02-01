@@ -178,6 +178,11 @@ jooq {
                                 .withUserType(" com.doruk.domain.shared.enums.MultiAuthType")
                                 .withEnumConverter(true)
                                 .withIncludeTypes("multi_auth_type"),
+
+                            ForcedType()
+                                .withUserType("com.doruk.domain.shared.enums.UserAccountStatus")
+                                .withEnumConverter(true)
+                                .withIncludeTypes("user_status")
                         )
                     }
 
