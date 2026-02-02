@@ -84,7 +84,6 @@ dependencies {
     implementation("net.coobird:thumbnailator:0.4.21")
     implementation("software.amazon.awssdk:s3")
     implementation("de.mkammerer:argon2-jvm:2.12")
-    implementation("com.fasterxml.uuid:java-uuid-generator:5.2.0")
     // compression
     implementation("com.aayushatharva.brotli4j:brotli4j:1.20.0")
     runtimeOnly("com.aayushatharva.brotli4j:native-linux-x86_64:1.20.0")

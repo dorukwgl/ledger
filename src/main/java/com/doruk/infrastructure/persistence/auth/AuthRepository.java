@@ -9,6 +9,7 @@ import com.doruk.infrastructure.persistence.auth.mapper.BiometricMapper;
 import com.doruk.infrastructure.persistence.auth.mapper.SessionMapper;
 import com.doruk.infrastructure.persistence.entity.*;
 import com.doruk.infrastructure.util.Constants;
+import com.doruk.jooq.tables.Biometrics;
 import com.doruk.jooq.tables.RolePermissions;
 import com.doruk.jooq.tables.UserRoles;
 import com.doruk.jooq.tables.Users;
@@ -292,23 +293,16 @@ public class AuthRepository {
                 .execute();
     }
 
-    public void updateBiometricLastUsed(String deviceId) {
-        var t = BiometricTable.$;
-        sqlClient.createUpdate(t)
-                .where(t.deviceId().eq(deviceId))
-                .set(t.lastUsedAt(), OffsetDateTime.now())
-                .execute();
-    }
-
     public void createOrUpdateBiometrics(String deviceId, String userId, byte[] publicKey) {
-        var draft = BiometricDraft.$.produce(b -> b
-                .setDeviceId(deviceId)
-                .setUserId(UUID.fromString(userId))
-                .setPublicKey(publicKey)
-        );
-
-        sqlClient.saveCommand(draft)
-                .setMode(SaveMode.UPSERT)
+        var b = Biometrics.BIOMETRICS;
+        dsl.insertInto(b)
+                .set(b.DEVICE_ID, deviceId)
+                .set(b.USER_ID, UUID.fromString(userId))
+                .set(b.PUBLIC_KEY, publicKey)
+                .onConflict(b.DEVICE_ID)
+                .doUpdate()
+                .set(b.USER_ID, DSL.excluded(b.USER_ID))
+                .set(b.PUBLIC_KEY, DSL.excluded(b.PUBLIC_KEY))
                 .execute();
     }
 
