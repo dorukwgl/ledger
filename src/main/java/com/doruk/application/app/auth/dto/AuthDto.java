@@ -8,6 +8,7 @@ import lombok.Builder;
 import java.util.Set;
 
 @Introspected
+@Builder
 public record AuthDto(
         String id,
         String username,

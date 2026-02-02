@@ -6,6 +6,7 @@ import io.micronaut.serde.annotation.Serdeable;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Serdeable
@@ -19,8 +20,8 @@ public record CurrentUserDto(
         boolean phoneVerified,
         MultiAuthType multiFactorAuth,
         UserAccountStatus status,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt,
+        OffsetDateTime createdAt,
+        OffsetDateTime updatedAt,
         ProfileDto profile,
         List<String> roles
 ) {

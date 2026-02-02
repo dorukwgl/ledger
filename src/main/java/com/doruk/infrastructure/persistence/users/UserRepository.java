@@ -5,16 +5,23 @@ import com.doruk.application.dto.UploadedFile;
 import com.doruk.infrastructure.persistence.entity.*;
 import com.doruk.infrastructure.persistence.users.mapper.ProfileMapper;
 import com.doruk.infrastructure.persistence.users.mapper.UserMapper;
+import com.doruk.jooq.tables.UserProfiles;
+import com.doruk.jooq.tables.UserRoles;
+import com.doruk.jooq.tables.Users;
 import jakarta.inject.Singleton;
-import javafx.util.Pair;
 import lombok.RequiredArgsConstructor;
 import org.babyfish.jimmer.sql.JSqlClient;
-import org.babyfish.jimmer.sql.JoinType;
 import org.babyfish.jimmer.sql.ast.Predicate;
 import org.babyfish.jimmer.sql.ast.mutation.SaveMode;
-import org.babyfish.jimmer.sql.fetcher.ReferenceFetchType;
+import org.jooq.DSLContext;
+import org.jooq.Record1;
+import org.jooq.impl.DSL;
 
-import java.util.*;
+import java.time.LocalDateTime;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 @Singleton
 @RequiredArgsConstructor
@@ -22,18 +29,7 @@ public class UserRepository {
     private final JSqlClient sqlClient;
     private final UserMapper userMapper;
     private final ProfileMapper profileMapper;
-
-//    public Mono<UserDto> findByEmailOrUsername(String field) {
-//        var table = UserTable.$;
-//        return Mono.fromCallable(() -> sqlClient.createQuery(table)
-//                    .where(Predicate.or(
-//                            table.username().eq(field),
-//                            table.email().eq(field)
-//                    ))
-//                    .select(table)
-//                    .fetchFirst())
-//                .subscribeOn(executors.BLOCKING);
-//    }
+    private final DSLContext dsl;
 
     public Optional<UserUniqueFields> findByUsernameOrEmail(String username, String email) {
         var t = UserTable.$;
@@ -50,32 +46,36 @@ public class UserRepository {
         return Optional.of(new UserUniqueFields(user.get_1(), user.get_2()));
     }
 
-
     public UserResponseDto createUser(CreateUserCmd dto, String hashedPassword) {
-        var draft = UserDraft.$.produce(u ->
-                u.setUsername(dto.username().toLowerCase(Locale.ROOT))
-                        .setEmail(dto.email().toLowerCase(Locale.ROOT))
-                        .setPhone(dto.phone())
-                        .setPassword(hashedPassword)
-                        .setRoles(List.of(RoleDraft.$.produce(r -> r.setName("USER"))))
-        );
+        var u = Users.USERS;
+        var r = UserRoles.USER_ROLES;
+        return dsl.transactionResult(() -> {
+            var usr = dsl.insertInto(u)
+                    .set(u.USERNAME, dto.username())
+                    .set(u.EMAIL, dto.email())
+                    .set(u.PASSWORD, hashedPassword)
+                    .returning()
+                    .fetchOne(rs -> UserResponseDto.builder()
+                            .id(rs.getId())
+                            .username(rs.getUsername())
+                            .email(rs.getEmail())
+                            .phone(rs.getPhone())
+                            .status(rs.getStatus())
+                            .emailVerified(rs.getIsEmailVerified())
+                            .phoneVerified(rs.getIsPhoneVerified())
+                            .multiFactorAuth(rs.getMultiFactorAuth())
+                            .createdAt(rs.getCreatedAt())
+                            .updatedAt(rs.getUpdatedAt())
+                            .build()
+                    );
 
-        var id = sqlClient.transaction(() -> sqlClient.saveCommand(draft).execute()
-                .getModifiedEntity().id());
-        var user = sqlClient.findById(User.class, id);
+            dsl.insertInto(r)
+                    .set(r.USER_ID, Objects.requireNonNull(usr).id())
+                    .set(r.NAME, "USER")
+                    .execute();
 
-        return userMapper.toResponseDto(Objects.requireNonNull(user));
-    }
-
-    public Pair<String, String> getMailAddress(String id) {
-        var t = UserTable.$;
-        var user = sqlClient.createQuery(t)
-                .where(t.id().eq(UUID.fromString(id)))
-                .select(t.username(), t.email())
-                .execute();
-
-        return user.isEmpty() ? null :
-                new Pair<>(user.getFirst().get_1(), user.getFirst().get_2());
+            return usr;
+        });
     }
 
     public ProfileDto updateProfile(String userId, ProfileDto dto) {
@@ -86,6 +86,7 @@ public class UserRepository {
                 .setState(dto.state())
                 .setCountry(dto.country())
                 .setPostalCode(dto.postalCode())
+                .setUpdatedAt(LocalDateTime.now())
                 .setUser(UserDraft.$.produce(u ->
                         u.setId(UUID.fromString(userId))))
         );
@@ -119,16 +120,41 @@ public class UserRepository {
     }
 
     public CurrentUserDto getCurrentUser(String userId) {
-        var t = UserTable.$;
-        var userLst = sqlClient.createQuery(t)
-                .where(t.id().eq(UUID.fromString(userId)))
-                .select(
-                        t.fetch(UserFetcher.$.allScalarFields()
-                                .profile(ReferenceFetchType.JOIN_ALWAYS, UserProfileFetcher.$.allScalarFields())
-                                .roles()
-                        ))
-                .execute();
+        var u = Users.USERS;
+        var r = UserRoles.USER_ROLES;
+        var p = UserProfiles.USER_PROFILES;
+        return dsl.select(
+                        u.ID.cast(String.class),
+                        u.USERNAME,
+                        u.EMAIL,
+                        u.PHONE,
+                        u.IS_EMAIL_VERIFIED,
+                        u.IS_PHONE_VERIFIED,
+                        u.MULTI_FACTOR_AUTH,
+                        u.STATUS,
+                        u.CREATED_AT,
+                        u.UPDATED_AT,
 
-        return userMapper.toCurrentUserDto(userLst.getFirst());
+                        DSL.row(
+                                p.USER_ID.cast(String.class),
+                                p.FULL_NAME,
+                                p.ADDRESS,
+                                p.CITY,
+                                p.STATE,
+                                p.COUNTRY,
+                                p.POSTAL_CODE,
+                                p.CREATED_AT,
+                                p.UPDATED_AT
+                        ).mapping(ProfileDto::new),
+                        // fetch roles
+                        DSL.multiset(
+                                DSL.select(r.NAME)
+                                        .where(r.USER_ID.eq(u.ID))
+                        ).convertFrom(rs -> rs.stream().map(Record1::value1).toList())
+                )
+                .from(u)
+                .leftJoin(p).on(u.ID.eq(p.USER_ID))
+                .where(u.ID.eq(UUID.fromString(userId)))
+                .fetchOne(userMapper::toCurrentUserDto);
     }
 }

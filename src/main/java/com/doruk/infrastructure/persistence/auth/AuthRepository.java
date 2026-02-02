@@ -63,7 +63,18 @@ public class AuthRepository {
                 )
                 .from(u)
                 .where(whereCondition)
-                .fetchOneInto(AuthDto.class);
+                .fetchOne(rs -> AuthDto.builder()
+                        .id(rs.value1().toString())
+                        .username(rs.value2())
+                        .password(rs.value3())
+                        .phone(rs.value4())
+                        .email(rs.value5())
+                        .emailVerified(rs.value6())
+                        .phoneVerified(rs.value7())
+                        .multiFactorAuth(rs.value8())
+                        .permissions(rs.value9())
+                        .build()
+                );
 
         return Optional.ofNullable(rec);
     }
