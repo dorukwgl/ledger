@@ -12,7 +12,7 @@ import java.time.OffsetDateTime;
 @Serdeable
 @Builder
 public record ProductResponse(
-        String id,
+        Long id,
         String name,
         CatalogCode code,
         String description,

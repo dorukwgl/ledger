@@ -18,7 +18,6 @@ import javafx.util.Pair;
 import lombok.RequiredArgsConstructor;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.ast.Predicate;
-import org.babyfish.jimmer.sql.ast.mutation.SaveMode;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 
@@ -109,17 +108,14 @@ public class AuthRepository {
 
     public Optional<SessionDto> getActiveSession(String sessionId) {
         var t = SessionTable.$;
-        var dt = sqlClient.createQuery(t)
+        return sqlClient.createQuery(t)
                 .where(Predicate.and(t.sessionId().eq(sessionId),
                         t.expiresAt().gt(OffsetDateTime.now())))
                 .select(t)
-                .execute();
-
-        if (dt.isEmpty())
-            return Optional.empty();
-
-        var session = sessionMapper.toDto(dt.getFirst());
-        return Optional.of(session);
+                .execute()
+                .stream()
+                .map(sessionMapper::toDto)
+                .findFirst();
     }
 
     public List<SessionDto> getActiveDevices(String userId) {
@@ -308,16 +304,15 @@ public class AuthRepository {
 
     public Optional<BiometricDto> getActiveBiometric(String deviceId) {
         var t = BiometricTable.$;
-        var dt = sqlClient.createQuery(t)
+        return sqlClient.createQuery(t)
                 .where(Predicate.and(
                         t.deviceId().eq(deviceId),
                         t.lastUsedAt().gt(OffsetDateTime.now().minusDays(Constants.BIOMETRIC_MAX_STALE_DAYS))))
                 .select(t.fetch(BiometricFetcher.$.allScalarFields()))
-                .execute();
-
-        if (dt.isEmpty())
-            return Optional.empty();
-        return Optional.of(biometricMapper.toDto(dt.getFirst()));
+                .execute()
+                .stream()
+                .map(biometricMapper::toDto)
+                .findFirst();
     }
 
     public void updateLastUsedBiometric(String deviceId) {

@@ -103,21 +103,20 @@ public class ProductRepositoryImpl implements ProductRepository {
         var res = client.saveCommand(draft).setMode(SaveMode.UPDATE_ONLY)
                 .execute();
 
-        if (res.getTotalAffectedRowCount() < 1)
-            return Optional.empty();
-
-        return Optional.of(res.getModifiedEntity())
-                .map(r -> Product.rehydrate(
-                        r.id(),
-                        r.name(),
-                        r.code(),
-                        r.description(),
-                        r.productKind(),
-                        r.ownership(),
-                        r.status(),
-                        r.createdAt(),
-                        r.updatedAt()
-                ));
+        return res.getTotalAffectedRowCount() < 1 ?
+                Optional.empty() :
+                Optional.of(res.getModifiedEntity())
+                        .map(r -> Product.rehydrate(
+                                r.id(),
+                                r.name(),
+                                r.code(),
+                                r.description(),
+                                r.productKind(),
+                                r.ownership(),
+                                r.status(),
+                                r.createdAt(),
+                                r.updatedAt()
+                        ));
     }
 
     @Override

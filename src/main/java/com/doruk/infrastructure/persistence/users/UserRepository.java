@@ -33,17 +33,14 @@ public class UserRepository {
 
     public Optional<UserUniqueFields> findByUsernameOrEmail(String username, String email) {
         var t = UserTable.$;
-        var userQuery = sqlClient.createQuery(t)
+        return sqlClient.createQuery(t)
                 .where(Predicate.or(t.username().eq(username.toLowerCase(Locale.ROOT)),
                         t.email().eq(email.toLowerCase(Locale.ROOT))))
                 .select(t.username(), t.email())
-                .execute();
-
-        if (userQuery.isEmpty())
-            return Optional.empty();
-
-        var user = userQuery.getFirst();
-        return Optional.of(new UserUniqueFields(user.get_1(), user.get_2()));
+                .execute()
+                .stream()
+                .map(u -> new UserUniqueFields(u.get_1(), u.get_2()))
+                .findFirst();
     }
 
     public UserResponseDto createUser(CreateUserCmd dto, String hashedPassword) {
@@ -108,14 +105,13 @@ public class UserRepository {
                     .set(t.profileIconId(), icon.id())
                     .execute();
 
-            if (oldPic.isEmpty())
-                return Optional.empty();
-
-            var oldFile = oldPic.getFirst();
-            // delete old file if exists
-            sqlClient.deleteById(MediaStore.class, oldFile.id());
-
-            return Optional.of(oldFile.objectKey());
+            return oldPic.stream()
+                    .map(m -> {
+                        // delete old file if exists
+                        sqlClient.deleteById(MediaStore.class, m.id());
+                        return m.objectKey();
+                    })
+                    .findFirst();
         });
     }
 
