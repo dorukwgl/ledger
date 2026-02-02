@@ -21,7 +21,7 @@ import org.babyfish.jimmer.sql.ast.mutation.SaveMode;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.*;
 
 @Singleton
@@ -92,7 +92,7 @@ public class AuthRepository {
     public void createSession(String userId,
                               String sessionId,
                               Set<Permissions> permissions,
-                              LocalDateTime expiration,
+                              OffsetDateTime expiration,
                               Optional<String> deviceId,
                               Optional<String> deviceInfo) {
 
@@ -110,7 +110,7 @@ public class AuthRepository {
         var t = SessionTable.$;
         var dt = sqlClient.createQuery(t)
                 .where(Predicate.and(t.sessionId().eq(sessionId),
-                        t.expiresAt().gt(LocalDateTime.now())))
+                        t.expiresAt().gt(OffsetDateTime.now())))
                 .select(t)
                 .execute();
 
@@ -126,7 +126,7 @@ public class AuthRepository {
         return sqlClient.createQuery(t)
                 .where(Predicate.and(
                                 t.userId().eq(UUID.fromString(userId))),
-                        t.expiresAt().gt(LocalDateTime.now())
+                        t.expiresAt().gt(OffsetDateTime.now())
                 )
                 .select(t.id(), t.deviceId(), t.deviceInfo(), t.createdAt())
                 .execute()
@@ -296,7 +296,7 @@ public class AuthRepository {
         var t = BiometricTable.$;
         sqlClient.createUpdate(t)
                 .where(t.deviceId().eq(deviceId))
-                .set(t.lastUsedAt(), LocalDateTime.now())
+                .set(t.lastUsedAt(), OffsetDateTime.now())
                 .execute();
     }
 
@@ -317,7 +317,7 @@ public class AuthRepository {
         var dt = sqlClient.createQuery(t)
                 .where(Predicate.and(
                         t.deviceId().eq(deviceId),
-                        t.lastUsedAt().gt(LocalDateTime.now().minusDays(Constants.BIOMETRIC_MAX_STALE_DAYS))))
+                        t.lastUsedAt().gt(OffsetDateTime.now().minusDays(Constants.BIOMETRIC_MAX_STALE_DAYS))))
                 .select(t.fetch(BiometricFetcher.$.allScalarFields()))
                 .execute();
 
@@ -330,7 +330,7 @@ public class AuthRepository {
         var t = BiometricTable.$;
         sqlClient.createUpdate(t)
                 .where(t.deviceId().eq(deviceId))
-                .set(t.lastUsedAt(), LocalDateTime.now())
+                .set(t.lastUsedAt(), OffsetDateTime.now())
                 .execute();
     }
 

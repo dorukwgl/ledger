@@ -4,7 +4,7 @@ import com.doruk.domain.catalog.types.DependencyType;
 import com.doruk.domain.catalog.types.EnforcedAt;
 import org.babyfish.jimmer.sql.*;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Entity
 public interface SkuDependencies {
@@ -16,7 +16,7 @@ public interface SkuDependencies {
 
     EnforcedAt enforcedAt();
 
-    LocalDateTime createdAt();
+    OffsetDateTime createdAt();
 
     @ManyToOne
     @JoinColumn(name = "target_sku_id")

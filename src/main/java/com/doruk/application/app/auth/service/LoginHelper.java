@@ -13,7 +13,7 @@ import jakarta.inject.Singleton;
 import javafx.util.Pair;
 import lombok.RequiredArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -28,7 +28,7 @@ public class LoginHelper {
 
     private Pair<String, JwtResponse> createSessionTokens(String userId, Set<Permissions> permissions, Optional<String> deviceId, Optional<String> deviceInfo) {
         var sessionId = GenerateRandom.generateSessionId();
-        var sessionExpiration = LocalDateTime.now().plusDays(appConfig.sessionExpiration());
+        var sessionExpiration = OffsetDateTime.now().plusDays(appConfig.sessionExpiration());
 
         try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
             var accessTokenFuture = CompletableFuture.supplyAsync(() -> issuer.issueToken(

@@ -17,7 +17,7 @@ import org.jooq.DSLContext;
 import org.jooq.Record1;
 import org.jooq.impl.DSL;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
@@ -86,7 +86,7 @@ public class UserRepository {
                 .setState(dto.state())
                 .setCountry(dto.country())
                 .setPostalCode(dto.postalCode())
-                .setUpdatedAt(LocalDateTime.now())
+                .setUpdatedAt(OffsetDateTime.now())
                 .setUser(UserDraft.$.produce(u ->
                         u.setId(UUID.fromString(userId))))
         );

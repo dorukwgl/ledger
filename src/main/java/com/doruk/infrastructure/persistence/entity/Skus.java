@@ -1,22 +1,21 @@
 package com.doruk.infrastructure.persistence.entity;
 
-import java.lang.Integer;
-import java.lang.String;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
-
+import com.doruk.domain.catalog.types.CatalogStatus;
 import com.doruk.domain.catalog.types.SkuCategory;
 import com.doruk.domain.catalog.types.SkuScope;
-import com.doruk.domain.catalog.types.CatalogStatus;
-import com.doruk.infrastructure.util.V7Generator;
-import org.babyfish.jimmer.sql.*;
+import org.babyfish.jimmer.sql.Entity;
+import org.babyfish.jimmer.sql.Id;
+import org.babyfish.jimmer.sql.ManyToOne;
+import org.babyfish.jimmer.sql.OneToMany;
 import org.jetbrains.annotations.Nullable;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.UUID;
 
 @Entity
 public interface Skus {
     @Id
-    @GeneratedValue(generatorType = V7Generator.class)
     UUID id();
 
     String code();
@@ -38,11 +37,11 @@ public interface Skus {
     CatalogStatus status();
 
     @Nullable
-    LocalDateTime publishedAt();
+    OffsetDateTime publishedAt();
 
-    LocalDateTime createdAt();
+    OffsetDateTime createdAt();
 
-    LocalDateTime updatedAt();
+    OffsetDateTime updatedAt();
 
     @ManyToOne
     Offerings offerings();

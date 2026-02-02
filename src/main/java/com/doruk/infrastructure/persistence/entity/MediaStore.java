@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import org.babyfish.jimmer.sql.*;
 import org.jspecify.annotations.Nullable;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "media_store")
@@ -26,9 +26,9 @@ public interface MediaStore {
     long size();
 
     @NotNull
-    LocalDateTime createdAt();
+    OffsetDateTime createdAt();
 
     @Nullable
     @LogicalDeleted("now")
-    LocalDateTime deletedAt();
+    OffsetDateTime deletedAt();
 }

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.micronaut.serde.annotation.Serdeable;
 import lombok.Builder;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Set;
 
 @Serdeable
@@ -18,8 +18,8 @@ public record SessionDto(
         String sessionId,
         String deviceInfo,
         String deviceId,
-        LocalDateTime expiresAt,
-        LocalDateTime createdAt,
+        OffsetDateTime expiresAt,
+        OffsetDateTime createdAt,
         @JsonIgnore
         Set<Permissions> permissions) {
 }

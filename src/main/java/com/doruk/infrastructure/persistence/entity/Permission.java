@@ -4,7 +4,7 @@ import io.micronaut.core.annotation.Introspected;
 import jakarta.annotation.Nullable;
 import org.babyfish.jimmer.sql.*;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Introspected
@@ -20,5 +20,5 @@ public interface Permission {
     @LogicalDeleted("now")
     @Nullable
     @Column(name = "deleted_at")
-    LocalDateTime deletedAt();
+    OffsetDateTime deletedAt();
 }

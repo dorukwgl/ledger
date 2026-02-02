@@ -7,7 +7,7 @@ import com.doruk.domain.catalog.valueobjects.CatalogCode;
 import io.micronaut.serde.annotation.Serdeable;
 import lombok.Builder;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Serdeable
 @Builder
@@ -19,7 +19,7 @@ public record ProductResponse(
         ProductKind productKind,
         Ownership ownership,
         CatalogStatus status,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        OffsetDateTime createdAt,
+        OffsetDateTime updatedAt
 ) {
 }

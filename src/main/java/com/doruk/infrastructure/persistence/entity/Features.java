@@ -1,12 +1,11 @@
 package com.doruk.infrastructure.persistence.entity;
 
-import java.lang.String;
-import java.time.LocalDateTime;
-import java.util.List;
-
 import com.doruk.domain.catalog.types.FeatureValue;
 import org.babyfish.jimmer.sql.*;
 import org.jetbrains.annotations.Nullable;
+
+import java.time.OffsetDateTime;
+import java.util.List;
 
 @Entity
 public interface Features {
@@ -26,7 +25,7 @@ public interface Features {
     @Nullable
     String unit();
 
-    LocalDateTime createdAt();
+    OffsetDateTime createdAt();
 
     @OneToMany(
             mappedBy = "features"

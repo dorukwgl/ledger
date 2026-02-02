@@ -3,7 +3,7 @@ package com.doruk.infrastructure.persistence.entity;
 import jakarta.annotation.Nullable;
 import org.babyfish.jimmer.sql.*;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Entity
@@ -26,5 +26,5 @@ public interface Role {
     @LogicalDeleted("now")
     @Nullable
 //    @Column(name = "deleted_at")
-    LocalDateTime deletedAt();
+    OffsetDateTime deletedAt();
 }

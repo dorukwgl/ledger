@@ -1,10 +1,9 @@
 package com.doruk.infrastructure.persistence.entity;
 
-import java.lang.String;
-import java.time.LocalDateTime;
-
 import com.doruk.domain.catalog.types.CatalogStatus;
 import org.babyfish.jimmer.sql.*;
+
+import java.time.OffsetDateTime;
 
 @Entity
 public interface Tiers {
@@ -21,9 +20,9 @@ public interface Tiers {
 
     CatalogStatus status();
 
-    LocalDateTime createdAt();
+    OffsetDateTime createdAt();
 
-    LocalDateTime updatedAt();
+    OffsetDateTime updatedAt();
 
     @ManyToOne
     Skus skus();

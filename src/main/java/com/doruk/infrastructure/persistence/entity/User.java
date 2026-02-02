@@ -2,15 +2,11 @@ package com.doruk.infrastructure.persistence.entity;
 
 import com.doruk.domain.shared.enums.MultiAuthType;
 import com.doruk.domain.shared.enums.UserAccountStatus;
-import com.doruk.infrastructure.util.V7Generator;
 import io.micronaut.core.annotation.Introspected;
-import jdk.jfr.Timestamp;
 import org.babyfish.jimmer.sql.*;
-import org.babyfish.jimmer.sql.meta.UUIDIdGenerator;
-import org.babyfish.jimmer.sql.meta.UserIdGenerator;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,7 +15,6 @@ import java.util.UUID;
 @Table(name = "users")
 public interface User {
     @Id
-    @GeneratedValue(generatorType = V7Generator.class)
     UUID id();
 
     @Key
@@ -48,10 +43,10 @@ public interface User {
 
     @Nullable
     @Column(name = "updated_at")
-    LocalDateTime updatedAt();
+    OffsetDateTime updatedAt();
 
     @Nullable
-    LocalDateTime createdAt();
+    OffsetDateTime createdAt();
 
     // --- Relationships ---
 

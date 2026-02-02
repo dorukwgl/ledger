@@ -4,7 +4,7 @@ import io.micronaut.core.annotation.Introspected;
 import jakarta.annotation.Nullable;
 import org.babyfish.jimmer.sql.*;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Introspected
@@ -30,10 +30,10 @@ public interface Session {
     String deviceId();
 
     @Column(name = "expires_at")
-    LocalDateTime expiresAt();
+    OffsetDateTime expiresAt();
 
     @Column(name = "created_at")
-    LocalDateTime createdAt();
+    OffsetDateTime createdAt();
 
     @Column(name = "permissions")
     List<Integer> cachedPermissions();

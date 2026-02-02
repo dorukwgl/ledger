@@ -3,7 +3,7 @@ package com.doruk.infrastructure.persistence.entity;
 import jakarta.annotation.Nullable;
 import org.babyfish.jimmer.sql.*;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
@@ -42,7 +42,7 @@ public interface UserProfile {
     @Nullable
     String postalCode();
 
-    LocalDateTime createdAt();
+    OffsetDateTime createdAt();
 
-    LocalDateTime updatedAt();
+    OffsetDateTime updatedAt();
 }

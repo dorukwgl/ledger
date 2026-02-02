@@ -20,7 +20,7 @@ import org.babyfish.jimmer.sql.ast.Predicate;
 import org.babyfish.jimmer.sql.ast.mutation.SaveMode;
 import org.jspecify.annotations.Nullable;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 
 @Singleton
@@ -98,7 +98,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                 .setOwnership(product.getOwnership())
                 .setProductKind(product.getProductKind())
                 .setStatus(product.getStatus())
-                .setUpdatedAt(LocalDateTime.now())
+                .setUpdatedAt(OffsetDateTime.now())
         );
         var res = client.saveCommand(draft).setMode(SaveMode.UPDATE_ONLY)
                 .execute();

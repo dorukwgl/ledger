@@ -1,17 +1,15 @@
 package com.doruk.infrastructure.persistence.entity;
 
-import com.doruk.infrastructure.util.V7Generator;
 import jakarta.annotation.Nullable;
 import org.babyfish.jimmer.sql.*;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "biometrics")
 public interface Biometric {
     @Id
-    @GeneratedValue(generatorType = V7Generator.class)
     UUID id();
 
     @ManyToOne
@@ -25,5 +23,5 @@ public interface Biometric {
     String deviceId();
 
     @Nullable
-    LocalDateTime lastUsedAt();
+    OffsetDateTime lastUsedAt();
 }

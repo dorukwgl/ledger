@@ -8,7 +8,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -20,8 +20,8 @@ public class Product {
     private ProductKind productKind;
     private Ownership ownership;
     private CatalogStatus status;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
 
     // for intent/business creation
     public static Product create(String name, String code, String description,
@@ -48,8 +48,8 @@ public class Product {
             ProductKind productKind,
             Ownership ownership,
             CatalogStatus status,
-            LocalDateTime createdAt,
-            LocalDateTime updatedAt
+            OffsetDateTime createdAt,
+            OffsetDateTime updatedAt
     ) {
         return new Product(id, name, new CatalogCode(code), description, productKind,
                 ownership, status, createdAt, updatedAt);

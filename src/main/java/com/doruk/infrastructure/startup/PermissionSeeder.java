@@ -5,10 +5,8 @@ import io.micronaut.context.annotation.Requires;
 import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.babyfish.jimmer.sql.JSqlClient;
-import org.babyfish.jimmer.sql.meta.UUIDIdGenerator;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.time.OffsetDateTime;
 
 @Singleton
 @Requires(env = "setup")
@@ -17,7 +15,7 @@ public class PermissionSeeder {
     private final JSqlClient sqlClient;
 
     public void seedPermissions() {
-        var permission = PermissionDraft.$.produce(p -> p.setName("DICTATOR_PERMISSION").setDeletedAt(LocalDateTime.now()));
+        var permission = PermissionDraft.$.produce(p -> p.setName("DICTATOR_PERMISSION").setDeletedAt(OffsetDateTime.now()));
         sqlClient.saveCommand(permission).execute();
 
         System.out.println("Permissions seeded...");

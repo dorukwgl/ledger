@@ -1,14 +1,13 @@
 package com.doruk.infrastructure.persistence.entity;
 
-import java.lang.String;
-import java.time.LocalDateTime;
-import java.util.List;
-
+import com.doruk.domain.catalog.types.CatalogStatus;
 import com.doruk.domain.catalog.types.DeliveryModel;
 import com.doruk.domain.catalog.types.InfraModelType;
 import com.doruk.domain.catalog.types.OperationalOwner;
-import com.doruk.domain.catalog.types.CatalogStatus;
 import org.babyfish.jimmer.sql.*;
+
+import java.time.OffsetDateTime;
+import java.util.List;
 
 @Entity
 public interface Offerings {
@@ -28,9 +27,9 @@ public interface Offerings {
 
     CatalogStatus status();
 
-    LocalDateTime createdAt();
+    OffsetDateTime createdAt();
 
-    LocalDateTime updatedAt();
+    OffsetDateTime updatedAt();
 
     @ManyToOne
     Products products();
