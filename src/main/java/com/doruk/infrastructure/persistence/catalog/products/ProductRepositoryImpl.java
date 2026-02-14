@@ -42,17 +42,7 @@ public class ProductRepositoryImpl implements ProductRepository {
         );
 
         var generated = client.saveCommand(pr).execute().getModifiedEntity();
-        return Product.rehydrate(
-                generated.id(),
-                generated.name(),
-                generated.code(),
-                generated.description(),
-                generated.productKind(),
-                generated.ownership(),
-                generated.status(),
-                generated.createdAt(),
-                null
-        );
+        return productMapper.toProduct(generated);
     }
 
     @Override
@@ -106,17 +96,7 @@ public class ProductRepositoryImpl implements ProductRepository {
         return res.getTotalAffectedRowCount() < 1 ?
                 Optional.empty() :
                 Optional.of(res.getModifiedEntity())
-                        .map(r -> Product.rehydrate(
-                                r.id(),
-                                r.name(),
-                                r.code(),
-                                r.description(),
-                                r.productKind(),
-                                r.ownership(),
-                                r.status(),
-                                r.createdAt(),
-                                r.updatedAt()
-                        ));
+                        .map(productMapper::toProduct);
     }
 
     @Override

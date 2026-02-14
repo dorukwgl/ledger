@@ -181,7 +181,22 @@ jooq {
                             ForcedType()
                                 .withUserType("com.doruk.domain.shared.enums.UserAccountStatus")
                                 .withEnumConverter(true)
-                                .withIncludeTypes("user_status")
+                                .withIncludeTypes("user_status"),
+
+                            ForcedType()
+                                .withUserType("com.doruk.domain.catalog.types.SkuCategory")
+                                .withEnumConverter(true)
+                                .withIncludeTypes("sku_category_enum"),
+
+                            ForcedType()
+                                .withUserType("com.doruk.domain.catalog.types.SkuScope")
+                                .withEnumConverter(true)
+                                .withIncludeTypes("sku_scope_enum"),
+
+                            ForcedType()
+                                .withUserType("com.doruk.domain.catalog.types.CatalogStatus")
+                                .withEnumConverter(true)
+                                .withIncludeTypes("status_enum")
                         )
                     }
 

@@ -61,6 +61,8 @@ public class ApplicationExceptionHandler implements ExceptionHandler<Application
                     "You are not supposed to perform this action." : msg;
             case RateLimitException _ -> "Slowdown, take a break! Try again after a while.";
             case SuspiciousIntrusionException _ -> getSuspiciousMessage();
+            case NotFoundException _ -> msg == null || msg.isBlank() ?
+                        "The resource you are trying to perform this action on, does not exists." : msg;
             default -> msg;
         };
     }

@@ -14,7 +14,7 @@ import java.time.OffsetDateTime;
 public record ProductResponse(
         Long id,
         String name,
-        CatalogCode code,
+        String code,
         String description,
         ProductKind productKind,
         Ownership ownership,

@@ -8,7 +8,7 @@ public class ProductMapper {
         return ProductResponse.builder()
                 .id(product.getId())
                 .name(product.getName())
-                .code(product.getCode())
+                .code(product.getCode().name())
                 .description(product.getDescription())
                 .productKind(product.getProductKind())
                 .ownership(product.getOwnership())
