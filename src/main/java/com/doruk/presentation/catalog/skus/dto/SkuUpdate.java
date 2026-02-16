@@ -31,6 +31,9 @@ public record SkuUpdate(
     
     @Nullable
     Integer termHintMonths,
+
+    @Nullable
+    Integer trialDays,
     
     @Nullable
     CatalogStatus status,

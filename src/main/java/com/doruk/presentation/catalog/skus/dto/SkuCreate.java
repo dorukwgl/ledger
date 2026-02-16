@@ -32,6 +32,9 @@ public record SkuCreate(
     
     @Nullable
     Integer termHintMonths,
+
+    @Nullable
+    Integer trialDays,
     
     @NotNull
     CatalogStatus status,

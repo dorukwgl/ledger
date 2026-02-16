@@ -1,6 +1,7 @@
 package com.doruk.infrastructure.persistence.catalog.products;
 
 import com.doruk.application.app.catalog.products.dto.ProductResponse;
+import com.doruk.application.app.catalog.products.repository.ProductQueryRepository;
 import com.doruk.application.dto.PageQuery;
 import com.doruk.application.dto.PageResponse;
 import com.doruk.application.enums.SortOrder;
@@ -26,7 +27,7 @@ import java.util.Optional;
 @Singleton
 @Bean(typed = ProductRepository.class)
 @RequiredArgsConstructor
-public class ProductRepositoryImpl implements ProductRepository {
+public class ProductRepositoryImpl implements ProductRepository, ProductQueryRepository {
     private final JSqlClient client;
     private final ProductMapper productMapper;
 

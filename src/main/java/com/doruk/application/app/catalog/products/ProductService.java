@@ -2,6 +2,7 @@ package com.doruk.application.app.catalog.products;
 
 import com.doruk.application.app.catalog.products.dto.ProductResponse;
 import com.doruk.application.app.catalog.products.mapper.ProductMapper;
+import com.doruk.application.app.catalog.products.repository.ProductQueryRepository;
 import com.doruk.application.dto.PageQuery;
 import com.doruk.application.dto.PageResponse;
 import com.doruk.application.exception.ConflictingArgumentException;
@@ -20,14 +21,15 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository repo;
+    private final ProductQueryRepository repoQuery;
 
     public ProductResponse getProduct(String code) {
-        return repo.getProduct(code)
+        return repoQuery.getProduct(code)
                 .orElseThrow(() -> new NotFoundException("No such product available"));
     }
 
     public PageResponse<ProductResponse> getAllProducts(String seed, PageQuery pageQuery) {
-        return repo.getProducts(seed, pageQuery);
+        return repoQuery.getProducts(seed, pageQuery);
     }
 
     public ProductResponse createProduct(Product product) {

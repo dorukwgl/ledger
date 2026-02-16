@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.doruk.application.app.catalog.skus.dto.SkuResponse;
+import com.doruk.application.app.catalog.skus.repository.SkuQueryRepository;
 import com.doruk.application.dto.PageQuery;
 import com.doruk.application.dto.PageResponse;
 import com.doruk.application.enums.SortOrder;
@@ -16,8 +17,10 @@ import com.doruk.infrastructure.persistence.catalog.skus.mapper.SkuMapper;
 import com.doruk.infrastructure.persistence.entity.OfferingsTable;
 import com.doruk.infrastructure.persistence.entity.SkusDraft;
 import com.doruk.infrastructure.persistence.entity.SkusTable;
+import com.doruk.infrastructure.persistence.entity.TiersTable;
 import com.doruk.infrastructure.persistence.mapper.PageMapper;
 import com.doruk.jooq.tables.Skus;
+import com.doruk.jooq.tables.Tiers;
 import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.babyfish.jimmer.sql.JSqlClient;
@@ -27,7 +30,7 @@ import org.jooq.DSLContext;
 
 @Singleton
 @RequiredArgsConstructor
-public class SkuRepositoryImpl implements SkuRepository {
+public class SkuRepositoryImpl implements SkuRepository, SkuQueryRepository {
     private final DSLContext dsl;
     private final JSqlClient client;
 
@@ -166,5 +169,28 @@ public class SkuRepositoryImpl implements SkuRepository {
                 ))
                 .exists();
     }
-    
+
+    @Override
+    public boolean hasConflictingDefaultTier(UUID skuId, long candidateTierId) {
+        var t = TiersTable.$;
+        return client.createQuery(t)
+                .where(Predicate.and(
+                        t.skusId().eq(skuId),
+                        t.id().ne(candidateTierId),
+                        t.defaults().eq(true)
+                ))
+                .exists();
+    }
+
+    @Override
+    public void updateDefaultTier(UUID skuId, long tierId, boolean isDefault) {
+        var t = TiersTable.$;
+        client.createUpdate(t)
+                .where(Predicate.and(
+                        t.skusId().eq(skuId),
+                        t.id().eq(tierId)
+                ))
+                .set(t.defaults(), isDefault)
+                .execute();
+    }
 }

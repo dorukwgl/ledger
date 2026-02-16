@@ -2,6 +2,7 @@ package com.doruk.application.app.catalog.offerings;
 
 import com.doruk.application.app.catalog.offerings.dto.OfferingResponse;
 import com.doruk.application.app.catalog.offerings.mapper.OfferingMapper;
+import com.doruk.application.app.catalog.offerings.repository.OfferingQueryRepository;
 import com.doruk.application.dto.PageQuery;
 import com.doruk.application.dto.PageResponse;
 import com.doruk.application.exception.ConflictingArgumentException;
@@ -24,6 +25,7 @@ import java.util.function.Predicate;
 @RequiredArgsConstructor
 public class OfferingService {
     private final OfferingRepository repo;
+    private final OfferingQueryRepository repoQuery;
 
     private void canCreateOrUpdateOffering(Predicate<Offering> offeringExist, Offering offering) {
         var offerExists = offeringExist.test(offering);
@@ -40,12 +42,12 @@ public class OfferingService {
     }
 
     public OfferingResponse getOffering(String code) {
-        return repo.getOffering(code)
+        return repoQuery.getOffering(code)
                 .orElseThrow(NotFoundException::new);
     }
 
     public PageResponse<OfferingResponse> getAllOfferings(@Nullable Long productId, @Nullable String offeringCodeSearch, PageQuery pageQuery) {
-        return repo.getOfferings(productId, offeringCodeSearch, pageQuery);
+        return repoQuery.getOfferings(productId, offeringCodeSearch, pageQuery);
     }
 
     public OfferingResponse createOffering(Offering offering) {

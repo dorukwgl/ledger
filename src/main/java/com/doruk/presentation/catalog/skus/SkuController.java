@@ -8,6 +8,7 @@ import com.doruk.application.dto.PageResponse;
 import com.doruk.infrastructure.dto.InfoResponse;
 import com.doruk.presentation.catalog.skus.dto.SkuCreate;
 import com.doruk.presentation.catalog.skus.dto.SkuUpdate;
+import com.doruk.presentation.catalog.skus.mappers.SkuMapper;
 import com.doruk.presentation.dto.PageQueryMapper;
 import com.doruk.presentation.dto.PageQueryRequest;
 import com.doruk.presentation.utils.AuthUtils;
@@ -17,6 +18,7 @@ import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Delete;
 import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.Put;
 import io.micronaut.http.annotation.RequestBean;
@@ -45,7 +47,7 @@ public class SkuController {
 
     @Operation(description = "List all skus of a given offering")
     @Get("/{offeringId}{?}")
-    public PageResponse<SkuResponse> getSkus(@NotNull long offeringId, 
+    public PageResponse<SkuResponse> getSkus(@NotNull @PathVariable long offeringId, 
         @Valid @RequestBean PageQueryRequest pageQueryRequest) {
         return service.getSkus(offeringId, PageQueryMapper.toQuery(pageQueryRequest));
     }
@@ -69,10 +71,18 @@ public class SkuController {
     }
 
     @Operation(description = "Delete given SKU")
-    @ApiResponse(responseCode = "404", description = "SKU not found")
     @Delete("/{id}")
-    public InfoResponse deleteSku(Authentication auth, UUID id) {
+    public InfoResponse deleteSku(Authentication auth, @PathVariable UUID id) {
         service.deleteSku(AuthUtils.extractPermissions(auth), id);
         return new InfoResponse("SKU deleted successfully");
+    }
+
+    @Operation(description = "Update/Change the default tier of given SKU." +
+            "Note: Only one default tier can exist per SKU, so make sure to update previous default to false if any")
+    @ApiResponse(responseCode = "409", description = "Another default tier already exists.")
+    @Put("/{skuId}/update-default/{tierId}/{defaultState}")
+    public InfoResponse updateDefaultSkuTier(@PathVariable UUID skuId, @PathVariable long tierId, @PathVariable boolean defaultState) {
+        service.updateDefaultSkuTier(skuId,  tierId, defaultState);
+        return new InfoResponse("Tier updated successfully");
     }
 }

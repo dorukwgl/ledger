@@ -1,6 +1,7 @@
 package com.doruk.infrastructure.persistence.catalog.offerings;
 
 import com.doruk.application.app.catalog.offerings.dto.OfferingResponse;
+import com.doruk.application.app.catalog.offerings.repository.OfferingQueryRepository;
 import com.doruk.application.dto.PageQuery;
 import com.doruk.application.dto.PageResponse;
 import com.doruk.application.enums.SortOrder;
@@ -28,7 +29,7 @@ import java.util.Optional;
 @Singleton
 @Bean(typed = OfferingRepository.class)
 @RequiredArgsConstructor
-public class OfferingRepositoryImpl implements OfferingRepository {
+public class OfferingRepositoryImpl implements OfferingRepository, OfferingQueryRepository {
     private final JSqlClient client;
 
     @Override
