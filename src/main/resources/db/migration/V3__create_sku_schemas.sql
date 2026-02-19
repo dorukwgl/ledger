@@ -117,8 +117,8 @@ CREATE TABLE features
 CREATE TABLE tier_features
 (
     tid        BIGSERIAL primary key,
-    tier_id    BIGINT NOT NULL REFERENCES tiers (id),
-    feature_id BIGINT NOT NULL REFERENCES features (id),
+    tier_id    BIGINT NOT NULL REFERENCES tiers (id) on delete cascade,
+    feature_id BIGINT NOT NULL REFERENCES features (id) on delete cascade,
     value      TEXT   NOT NULL
 );
 CREATE unique index idx_tier_feature ON tier_features (tier_id, feature_id);
@@ -128,8 +128,8 @@ CREATE TABLE sku_dependencies
 (
     id              BIGSERIAL PRIMARY KEY,
 
-    sku_id          UUID                     NOT NULL REFERENCES skus (id),
-    target_sku_id   UUID                     NOT NULL REFERENCES skus (id),
+    sku_id          UUID                     NOT NULL REFERENCES skus (id) on delete cascade,
+    target_sku_id   UUID                     NOT NULL REFERENCES skus (id) on delete cascade,
 
     dependency_type dependency_type_enum     NOT NULL,
     enforced_at     enforced_at_enum         NOT NULL,

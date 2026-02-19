@@ -15,7 +15,7 @@ import jakarta.inject.Singleton;
 public class DomainExceptionHandler implements ExceptionHandler<DomainException, HttpResponse<?>> {
     @Override
     public HttpResponse<?> handle(HttpRequest request, DomainException exception) {
-        return HttpResponse.status(400, "Haha, Ha ha")
+        return HttpResponse.status(400, "Worst Request")
                 .body(new ErrorResponse(exception.getMessage()));
     }
 }
