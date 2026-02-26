@@ -1,25 +1,24 @@
 package com.doruk.presentation.catalog.features.dto;
 
-import com.doruk.jooq.enums.FeatureValueTypeEnum;
-
+import com.doruk.domain.catalog.types.FeatureValue;
 import io.micrometer.context.Nullable;
 import io.micronaut.serde.annotation.Serdeable;
 
 @Serdeable
 public record FeatureUpdate(
-    @Nullable
-    String code,
+        @Nullable
+        String code,
 
-    @Nullable
-    String name,
+        @Nullable
+        String name,
 
-    @Nullable
-    FeatureValueTypeEnum valueType,
+        @Nullable
+        FeatureValue valueType,
 
-    @Nullable
-    String description,
+        @Nullable
+        String description,
 
-    @Nullable
-    String unit
+        @Nullable
+        String unit
 ) {
 }

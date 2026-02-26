@@ -196,7 +196,22 @@ jooq {
                             ForcedType()
                                 .withUserType("com.doruk.domain.catalog.types.CatalogStatus")
                                 .withEnumConverter(true)
-                                .withIncludeTypes("status_enum")
+                                .withIncludeTypes("status_enum"),
+
+                            ForcedType()
+                                .withUserType("com.doruk.domain.catalog.types.DependencyType")
+                                .withEnumConverter(true)
+                                .withIncludeTypes("dependency_type_enum"),
+
+                            ForcedType()
+                                .withUserType("com.doruk.domain.catalog.types.EnforcedAt")
+                                .withEnumConverter(true)
+                                .withIncludeTypes("enforced_at_enum"),
+
+                            ForcedType()
+                                .withUserType("com.doruk.domain.catalog.types.FeatureValue")
+                                .withEnumConverter(true)
+                                .withIncludeTypes("feature_value_type_enum")
                         )
                     }
 
@@ -243,6 +258,30 @@ micronaut {
         replaceLogbackXml = true
         configurationProperties.put("micronaut.security.jwks.enabled","false")
     }
+}
+
+tasks.shadowJar {
+    // Output filename (no "shadow" suffix)
+    archiveClassifier.set("")
+    archiveFileName.set("${project.name}-${project.version}-all.jar")
+
+    // Merge META-INF/services, spring.factories, etc.
+    mergeServiceFiles()
+
+    // Keep the entry point
+    manifest {
+        attributes["Main-Class"] = application.mainClass.get()
+    }
+}
+
+// Disable plain jar task (we only want the shadow/obfuscated one)
+tasks.named<Jar>("jar") {
+    enabled = true
+}
+
+// Make assemble depend on shadowJar
+tasks.assemble {
+    dependsOn(tasks.shadowJar)
 }
 
 tasks.named("compileJava") {
